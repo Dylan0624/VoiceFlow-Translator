@@ -1,8 +1,9 @@
+# main.py
 import os
 import sys
 import warnings
 warnings.filterwarnings('ignore', category=UserWarning)
-# 手動設置 Qt plugin 路徑
+
 conda_prefix = os.environ.get('CONDA_PREFIX', '')
 if conda_prefix:
     qt_plugin_path = os.path.join(conda_prefix, 'lib', 'qt6', 'plugins')
@@ -11,11 +12,9 @@ if conda_prefix:
 import shutil
 from PyQt6.QtWidgets import QApplication
 from UI.MainWindow import MainWindow
+import ollama
 
 def remove_pycache_dirs(path):
-    """
-    遞迴刪除指定路徑下所有 __pycache__ 資料夾
-    """
     for root, dirs, files in os.walk(path):
         if '__pycache__' in dirs:
             pycache_path = os.path.join(root, '__pycache__')
@@ -26,9 +25,7 @@ def remove_pycache_dirs(path):
                 print(f"刪除 {pycache_path} 時發生錯誤: {e}")
 
 def main():
-    # 取得 main.py 所在的目錄
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    # 刪除所有子資料夾中的 __pycache__
     remove_pycache_dirs(base_dir)
     
     app = QApplication(sys.argv)
