@@ -4,7 +4,7 @@
 
 ## 功能特點
 
-![alt text](image.png)
+![alt text](img/image.png)
 
 - 支援拖放或選擇多個音訊檔案
 - 左側檔案列表支援批次轉換、翻譯與總結
