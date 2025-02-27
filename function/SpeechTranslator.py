@@ -9,7 +9,6 @@ import warnings
 warnings.filterwarnings('ignore', category=UserWarning)
 
 
-
 class SpeechTranslator:
     """
     此模組提供 SpeechTranslator 類別，具有以下功能：
@@ -57,8 +56,7 @@ class SpeechTranslator:
             if sys.platform == "darwin":
                 translator_device = "mps"
             else:
-                translator_device = 0 if torch.cuda.is_available() else -1  # 非 macOS 優先使用 GPU，無 GPU 則使用 CPU
-
+                translator_device = 0 if torch.cuda.is_available() else -1
 
         model_name = f"Helsinki-NLP/opus-mt-{self.source_lang}-{self.target_lang}"
         self.translator = pipeline("translation", model=model_name, device=translator_device)
@@ -83,7 +81,7 @@ class SpeechTranslator:
             if sys.platform == "darwin":
                 translator_device = "mps"
             else:
-                translator_device = 0 if torch.cuda.is_available() else -1  # 非 macOS 優先使用 GPU，無 GPU 則使用 CPU
+                translator_device = 0 if torch.cuda.is_available() else -1 
 
         model_name = f"Helsinki-NLP/opus-mt-{self.source_lang}-{self.target_lang}"
         self.translator = pipeline("translation", model=model_name, device=translator_device)
