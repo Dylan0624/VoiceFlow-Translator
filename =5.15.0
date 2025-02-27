@@ -1,3 +1,0 @@
-Requirement already satisfied: PyQt5 in /home/dylan/miniconda3/envs/musicgen/lib/python3.12/site-packages (5.15.11)
-Requirement already satisfied: PyQt5-sip<13,>=12.15 in /home/dylan/miniconda3/envs/musicgen/lib/python3.12/site-packages (from PyQt5) (12.17.0)
-Requirement already satisfied: PyQt5-Qt5<5.16.0,>=5.15.2 in /home/dylan/miniconda3/envs/musicgen/lib/python3.12/site-packages (from PyQt5) (5.15.16)

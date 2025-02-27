@@ -54,12 +54,11 @@ class SpeechTranslator:
         self.target_traditional = target_traditional
 
         if translator_device is None:
-            if sys.platform.startswith("win"):
-                translator_device = -1  # Windows 使用 CPU
-            elif sys.platform == "darwin":
+            if sys.platform == "darwin":
                 translator_device = "mps"
             else:
-                translator_device = 0 if torch.cuda.is_available() else -1
+                translator_device = 0 if torch.cuda.is_available() else -1  # 非 macOS 優先使用 GPU，無 GPU 則使用 CPU
+
 
         model_name = f"Helsinki-NLP/opus-mt-{self.source_lang}-{self.target_lang}"
         self.translator = pipeline("translation", model=model_name, device=translator_device)
@@ -81,12 +80,10 @@ class SpeechTranslator:
         self.target_traditional = target_traditional
 
         if translator_device is None:
-            if sys.platform.startswith("win"):
-                translator_device = -1
-            elif sys.platform == "darwin":
+            if sys.platform == "darwin":
                 translator_device = "mps"
             else:
-                translator_device = 0 if torch.cuda.is_available() else -1
+                translator_device = 0 if torch.cuda.is_available() else -1  # 非 macOS 優先使用 GPU，無 GPU 則使用 CPU
 
         model_name = f"Helsinki-NLP/opus-mt-{self.source_lang}-{self.target_lang}"
         self.translator = pipeline("translation", model=model_name, device=translator_device)

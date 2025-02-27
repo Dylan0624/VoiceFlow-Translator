@@ -1,2 +1,0 @@
-Requirement already satisfied: whisper in /home/dylan/miniconda3/envs/musicgen/lib/python3.12/site-packages (1.1.10)
-Requirement already satisfied: six in /home/dylan/miniconda3/envs/musicgen/lib/python3.12/site-packages (from whisper) (1.17.0)
