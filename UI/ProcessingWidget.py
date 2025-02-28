@@ -4,6 +4,7 @@ from PyQt6.QtCore import QThread, pyqtSignal, Qt
 from function.SpeechTranslator import SpeechTranslator
 from UI.DownloadDialog import DownloadDialog
 
+
 class Worker(QThread):
     finished = pyqtSignal(object)
     error = pyqtSignal(Exception)
@@ -21,11 +22,12 @@ class Worker(QThread):
         except Exception as e:
             self.error.emit(e)
 
+
 class ProcessingWidget(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
-        self.speech_translator = None
+        self.speech_translator = None  # 延遲初始化
         self.lang_mapping = {"英文": "en", "中文(簡體)": "zh", "中文": "zh", "中文(繁體)": "zh", "法文": "fr", "西班牙文": "es", "德文": "de"}
         self.current_worker = None  # 用於追蹤當前運行中的 Worker
         self.init_ui()
@@ -120,6 +122,7 @@ class ProcessingWidget(QWidget):
         if not file_path:
             self.transcription_text_edit.setPlainText("請先選擇或拖曳一個音訊檔案。")
             return
+        self.transcription_text_edit.setPlainText("正在載入語音辨識模型...")
         self.speech_translator = SpeechTranslator(whisper_model_name=self.model_combo.currentText())
         self.run_worker(self.speech_translator.speech_to_text, file_path, result_key="transcription", process_name="語音辨識")
 
@@ -127,9 +130,15 @@ class ProcessingWidget(QWidget):
         if self.current_worker and self.current_worker.isRunning():
             QMessageBox.warning(self, "警告", "正在處理中，請稍候。")
             return
+        # 如果 speech_translator 未初始化，動態創建
         if not self.speech_translator:
-            self.translation_text_edit.setPlainText("請先進行語音辨識。")
-            return
+            self.translation_text_edit.setPlainText("正在初始化翻譯模型...")
+            self.speech_translator = SpeechTranslator(
+                whisper_model_name=self.model_combo.currentText(),
+                source_lang=self.lang_mapping.get(self.source_lang_combo.currentText(), "en"),
+                target_lang=self.lang_mapping.get(self.target_lang_combo.currentText(), "zh"),
+                target_traditional=self.target_lang_combo.currentText() == "中文(繁體)"
+            )
         text = self.transcription_text_edit.toPlainText().strip()
         if not text:
             self.translation_text_edit.setPlainText("沒有可翻譯的文字。")
@@ -152,9 +161,15 @@ class ProcessingWidget(QWidget):
         if self.current_worker and self.current_worker.isRunning():
             QMessageBox.warning(self, "警告", "正在處理中，請稍候。")
             return
+        # 如果 speech_translator 未初始化，動態創建
         if not self.speech_translator:
-            self.summary_text_edit.setPlainText("請先進行語音辨識並生成總結。")
-            return
+            self.summary_text_edit.setPlainText("正在初始化翻譯模型...")
+            self.speech_translator = SpeechTranslator(
+                whisper_model_name=self.model_combo.currentText(),
+                source_lang=self.lang_mapping.get(self.source_lang_combo.currentText(), "en"),
+                target_lang=self.lang_mapping.get(self.target_lang_combo.currentText(), "zh"),
+                target_traditional=self.target_lang_combo.currentText() == "中文(繁體)"
+            )
         text = self.summary_text_edit.toPlainText().strip()
         if not text or text in ["正在生成總結...", "請先進行語音辨識以提供內容。"]:
             self.summary_text_edit.setPlainText("沒有可翻譯的總結內容。")
@@ -216,6 +231,14 @@ class ProcessingWidget(QWidget):
         text_edit.setPlainText(f"{result_key.capitalize()}發生錯誤: {str(error)}")
 
     def set_translation_params(self):
+        # 如果 speech_translator 未初始化，動態創建
+        if not self.speech_translator:
+            self.speech_translator = SpeechTranslator(
+                whisper_model_name=self.model_combo.currentText(),
+                source_lang=self.lang_mapping.get(self.source_lang_combo.currentText(), "en"),
+                target_lang=self.lang_mapping.get(self.target_lang_combo.currentText(), "zh"),
+                target_traditional=self.target_lang_combo.currentText() == "中文(繁體)"
+            )
         source_lang = self.lang_mapping.get(self.source_lang_combo.currentText(), "en")
         target_lang_text = self.target_lang_combo.currentText()
         target_traditional = target_lang_text == "中文(繁體)"
@@ -264,4 +287,5 @@ class ProcessingWidget(QWidget):
     def close(self):
         if self.current_worker and self.current_worker.isRunning():
             self.current_worker.quit()
-            self.current_worker.wait()
+            self.current_worker.wait(timeout=5000)  # 設定超時，避免無限等待
+        self.current_worker = None

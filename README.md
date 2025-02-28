@@ -4,7 +4,7 @@
 
 ## 功能特點
 
-![alt text](img/image.png)
+![alt text](<img/CleanShot 2025-02-27 at 23.48.24@2x.png>)
 
 - 支援拖放或選擇多個音訊檔案
 - 左側檔案列表支援批次轉換、翻譯與總結
